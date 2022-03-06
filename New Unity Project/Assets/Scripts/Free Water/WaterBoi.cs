@@ -8,7 +8,9 @@ using Random = UnityEngine.Random;
 public class WaterBoi : MonoBehaviour
 {
     public float waterLevel;
-    
+
+    private WaterBoi[] neibouringWaters;  
+
     Renderer rend;
     
     // Start is called before the first frame update
@@ -20,18 +22,33 @@ public class WaterBoi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckorNeighbouringWater();
+        CheckForNeighbouringWater();
         
         WaterSpawnCheck();
     }
 
-    void CheckorNeighbouringWater()
+    void CheckForNeighbouringWater()
     {
-        RaycastHit[] raycasts = WaterManager.CheckForWater(transform.position);
-
-        if (raycasts.Length > 0)
+        int neighbouringSegmetns = 16;
+        var points = GeneratePoints(rend.bounds.center, neighbouringSegmetns, false);
+        
+        foreach (var point in points)
         {
+            RaycastHit[] raycasts = WaterManager.CheckForWater(point);
 
+            if (raycasts.Length > 0)
+            {
+                foreach (var raycast in raycasts)
+                {
+                    ShareOutWater(raycast.transform.GetComponent<WaterBoi>());
+                }
+                
+                Debug.DrawLine(transform.localToWorldMatrix * rend.bounds.center, point, Color.blue);
+            }
+            else
+            {
+                Debug.DrawLine(transform.localToWorldMatrix * rend.bounds.center, point, Color.green);
+            }
         }
     }
     
@@ -65,6 +82,11 @@ public class WaterBoi : MonoBehaviour
         var puddlesRadius = rend.bounds.extents.x;
 
         puddlesRadius *= 1.5f;
+
+        float posRandRange = 0.2f;
+        puddlesRadius *= (isRandom
+            ? Random.Range(puddlesRadius - posRandRange, puddlesRadius + posRandRange)
+            : 1f);
         
         float degreesPerSpawn = 360 / noOfRays;
 
@@ -91,9 +113,8 @@ public class WaterBoi : MonoBehaviour
         return points;
     }
     
-    void OnCollisionStay(Collision collisionInfo)
+    void ShareOutWater(WaterBoi waterBoi)
     {
-        WaterBoi waterBoi = collisionInfo.transform.GetComponent<WaterBoi>();
         if (waterBoi && waterBoi != this)
         {
             //share out the water between the puddles
