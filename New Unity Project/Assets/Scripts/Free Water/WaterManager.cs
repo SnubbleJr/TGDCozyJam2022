@@ -45,7 +45,7 @@ public class WaterManager : MonoBehaviour
 
             foreach (var raycast in raycasts)
             {            
-                WaterBoi waterBoi = raycast.transform.GetComponent<WaterBoi>();
+                WaterBoi waterBoi = raycast.transform.GetComponentInParent<WaterBoi>();
                 if (waterBoi)
                 {
                     waterBoi.waterLevel += amountToDishOutBetweenPuddles;
@@ -54,13 +54,18 @@ public class WaterManager : MonoBehaviour
         }
         else
         {
-            var newWaterPuddle = Instantiate(waterDroplet, position, Quaternion.identity);
+            Spawn(position, startingWaterLevel);
+        }
+    }
 
-            WaterBoi waterBoi = newWaterPuddle.GetComponent<WaterBoi>();
-            if (waterBoi)
-            {
-                waterBoi.waterLevel = startingWaterLevel;
-            } 
+    void Spawn(Vector3 position, float startingWaterLevel)
+    {
+        var newWaterPuddle = Instantiate(waterDroplet, position, Quaternion.identity);
+
+        WaterBoi waterBoi = newWaterPuddle.GetComponent<WaterBoi>();
+        if (waterBoi)
+        {
+            waterBoi.waterLevel = startingWaterLevel;
         }
     }
 

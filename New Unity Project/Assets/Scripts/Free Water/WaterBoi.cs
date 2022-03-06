@@ -9,28 +9,47 @@ public class WaterBoi : MonoBehaviour
 {
     public float waterLevel;
 
-    private WaterBoi[] neibouringWaters;  
+    private WaterBoi[] neibouringWaters;
+
+    public Vector2 minScale = new Vector2(0.5f, 1f);
+    public Vector2 maxScale = new Vector2(2f, 4f);
+    public float waterLevelCutOff = 10;
 
     Renderer rend;
     
     // Start is called before the first frame update
     void Start()
     {
-        rend = GetComponent<Renderer>();
+        rend = GetComponentInChildren<Renderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        UpdateVisual();
+
         CheckForNeighbouringWater();
         
         WaterSpawnCheck();
     }
 
+    void UpdateVisual()
+    {
+        float scale = waterLevel / waterLevelCutOff;
+        if (scale > 1f)
+        {
+            scale = 1;
+        }
+
+        Vector2 scaleScale = ((maxScale - minScale) * scale) * minScale;
+
+        this.transform.localScale = new Vector3(scaleScale.x, scaleScale.y, scaleScale.x);
+    }
+
     void CheckForNeighbouringWater()
     {
         int neighbouringSegmetns = 16;
-        var points = GeneratePoints(rend.bounds.center, neighbouringSegmetns, false);
+        var points = GeneratePoints(transform.position, neighbouringSegmetns, false, 1.2f);
         
         foreach (var point in points)
         {
@@ -40,14 +59,14 @@ public class WaterBoi : MonoBehaviour
             {
                 foreach (var raycast in raycasts)
                 {
-                    ShareOutWater(raycast.transform.GetComponent<WaterBoi>());
+                    ShareOutWater(raycast.transform.GetComponentInParent<WaterBoi>());
                 }
                 
-                Debug.DrawLine(transform.localToWorldMatrix * rend.bounds.center, point, Color.blue);
+                Debug.DrawLine( transform.position, point, Color.blue);
             }
             else
             {
-                Debug.DrawLine(transform.localToWorldMatrix * rend.bounds.center, point, Color.green);
+                Debug.DrawLine( transform.position, point, Color.green);
             }
         }
     }
@@ -60,11 +79,11 @@ public class WaterBoi : MonoBehaviour
             
             float amountToGiveOut = waterLevel / (2 * spawnAmount);
 
-            var points = GeneratePoints(rend.bounds.center, spawnAmount, true);
+            var points = GeneratePoints(transform.position, spawnAmount, true, 1.3f);
 
             foreach (var point in points)
             {
-                Debug.DrawLine(transform.localToWorldMatrix * rend.bounds.center, point, Color.red, 20);
+                Debug.DrawLine(transform.position, point, Color.red, 5);
                 if (WaterManager.SpawnWaterDelegate != null)
                 {
                     WaterManager.SpawnWaterDelegate(point, amountToGiveOut);
@@ -76,12 +95,12 @@ public class WaterBoi : MonoBehaviour
         }
     }
     
-    private Vector3[] GeneratePoints(Vector3 center, int noOfRays, bool isRandom = false)
+    private Vector3[] GeneratePoints(Vector3 center, int noOfRays, bool isRandom = false, float factor = 1.0f)
     {
         //get the radius of the puddle
         var puddlesRadius = rend.bounds.extents.x;
 
-        puddlesRadius *= 1.5f;
+        puddlesRadius *= factor;
 
         float posRandRange = 0.2f;
         puddlesRadius *= (isRandom
@@ -103,7 +122,7 @@ public class WaterBoi : MonoBehaviour
 
             var spawnPoint = Quaternion.Euler(0, degsToSpawnAt, 0) * startPoint;
 
-            var worldPos = transform.localToWorldMatrix * (center + spawnPoint);
+            var worldPos = center + spawnPoint;
 
             points[i] = worldPos;
             

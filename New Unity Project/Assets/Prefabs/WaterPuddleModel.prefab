@@ -12,10 +12,9 @@ GameObject:
   - component: {fileID: 5794082379506445124}
   - component: {fileID: 7450981923271835694}
   - component: {fileID: 1818662497802615119}
-  - component: {fileID: 5439298771824750004}
   - component: {fileID: 3076955546386180093}
   m_Layer: 6
-  m_Name: WaterPuddle
+  m_Name: WaterPuddleModel
   m_TagString: Water
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,19 +97,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &5439298771824750004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5818788007047421847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94055e9d74edaa74ca84822fcfc922af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waterLevel: 0
 --- !u!54 &3076955546386180093
 Rigidbody:
   m_ObjectHideFlags: 0
