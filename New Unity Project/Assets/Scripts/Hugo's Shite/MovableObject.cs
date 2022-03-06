@@ -6,7 +6,7 @@ using UnityEngine;
 public class MovableObject : Interactable
 {
     private Rigidbody target;
-    private SpringJoint joint;
+    protected SpringJoint joint;
     private bool isHeld = false;
     private Vector3 currentVelocity = Vector3.zero;
     [SerializeField]
