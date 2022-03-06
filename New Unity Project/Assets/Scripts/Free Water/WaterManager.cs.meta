@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 00ce8b759e283ae43928b52d7057e997
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - waterDroplet: {fileID: 5818788007047421847, guid: 9819fa66283a2384d8325a297ad18a91, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
