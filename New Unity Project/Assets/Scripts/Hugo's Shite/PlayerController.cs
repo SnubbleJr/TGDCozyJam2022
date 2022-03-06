@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private GameObject PlayerCamera;
     [SerializeField]
     private GameObject PlayerBody;
+
+    public Rigidbody PlayerHand;
     
     [HideInInspector]
     public enum MovementState
@@ -34,16 +36,39 @@ public class PlayerController : MonoBehaviour
         CurrentMovementState = MovementState.Walking;
         MovementSpeedMap.Add(MovementState.Running, RunSpeed);
         MovementSpeedMap.Add(MovementState.Walking, WalkSpeed);
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Player input
+        HandlePlayerMovement();
+
+        Debug.DrawLine(PlayerCamera.transform.position, PlayerCamera.transform.position + (PlayerCamera.transform.TransformDirection(Vector3.forward) * 3));
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            RaycastHit hit;
+            int layermask = 1 << 3;
+            if(Physics.Raycast(PlayerCamera.transform.position, PlayerCamera.transform.TransformDirection(Vector3.forward), out hit, 100f, layermask))
+            {
+                Interactable DesiredInteraction = hit.transform.gameObject.GetComponent<Interactable>();
+                if (DesiredInteraction != null)
+                {
+                    DesiredInteraction.DoInteraction(this);
+                }
+            }
+        }
+    }
+
+    void HandlePlayerMovement()
+    {
+        Vector3 MoveTo = Vector3.zero;
+
         Vector2 MovementInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         Vector2 LookInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * MouseSensitivity;
 
-        Vector3 MoveTo = Vector3.zero;
         CamYRotation -= LookInput.y;
         CamYRotation = Mathf.Clamp(CamYRotation, -75.0f, 75.0f);
 
@@ -51,7 +76,6 @@ public class PlayerController : MonoBehaviour
         PlayerCamera.transform.localRotation = Quaternion.Euler(CamYRotation, 0.0f, 0.0f);
 
         MoveTo = (transform.right * MovementInput.x) + (transform.forward * MovementInput.y);
-
         Controller.Move(MoveTo * Time.deltaTime * MovementSpeedMap[CurrentMovementState]);
     }
 }
